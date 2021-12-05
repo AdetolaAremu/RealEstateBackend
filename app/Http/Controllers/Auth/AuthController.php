@@ -9,73 +9,36 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(RegistrationRequest $request)
+    public function registerUser(RegistrationRequest $request)
     {
-        User::create($request->all());
+        User::create($request->only(
+            'first_name', 'last_name', 'middle_name', 'username', 'email', 'phone_number'
+        ) + [
+            'password' => Hash::make($request->input('password'))
+        ]);
 
-        return response(['message' => 'Registration successful!'], Response::HTTP_CREATED);
+        return response(['message' => 'Registration successful'], Response::HTTP_CREATED);
     }
 
     public function login(Request $request)
     {
-        if ($request->has('email')) {
+        $request->validate(['username' => 'required', 'password' => 'required']);
 
-            $request->validate(['email' => 'required', 'password' => 'required']);
+        if (Auth::attempt($request->only('username', 'password'))) {
+            $user = Auth::user();
 
-            if (Auth::attempt($request->only('email', 'password'))) {
+            $token = $user->createToken('user')->accessToken;
 
-                $user = Auth::user();
+            $cookie = cookie('jwt', $token, 7200);
 
-                $token = $user->createToken('user')->accessToken;
-
-                $cookie = cookie('jwt', $token, 7200);
-
-                return response(['token' => $token, 'message' => 'Login successful'], Response::HTTP_OK)->withCookie($cookie);
-            }
+            return response(['token' => $token, 'message' => 'Login successful'], Response::HTTP_OK)->withCookie($cookie);
         }
 
-        if ($request->has('username')) {
-
-            $request->validate(['username' => 'required', 'password' => 'required']);
-
-            if (Auth::attempt($request->only('username', 'password'))) {
-                $user = Auth::user();
-
-                $token = $user->createToken('user')->accessToken;
-
-                $cookie = cookie('jwt', $token, 7200);
-
-                return response(['token' => $token, 'message' => 'Login successful'], Response::HTTP_OK)->withCookie($cookie);
-            }
-        }
-
-        
-    }
-
-    public function changeUserInfo(Request $request)
-    {
-        $user = Auth::user();
-
-        $user->update($request->only('first_name', 'last_name', 'middle_name'));
-
-        return response(['message' => 'User data updated successfully!']);
-    }
-
-    public function changeUserPassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required', 
-            'confirm_password' => 'required|same:password'
-        ]);
-
-        $user = Auth::user();
-
-        $user->update($request->only('password', 'confirm_password'));
-
-        return response(['message' => 'Password updated successfully!']);
+        return response(["error" => "Username and Password do not match"], Response::HTTP_BAD_REQUEST);   
     }
 
     public function logout()
