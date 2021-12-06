@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEstateTypesTable extends Migration
+class CreateCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateEstateTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('estate_types', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->boolean('active')->default(1);
+            $table->foreignId('post_id')->references('id')->on('posts');
+            $table->string('text');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateEstateTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('estate_types');
+        Schema::dropIfExists('comments');
     }
 }
