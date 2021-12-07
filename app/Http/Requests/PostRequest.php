@@ -30,7 +30,8 @@ class PostRequest extends FormRequest
             'type' => 'required',
             'country_id' => 'required',
             'state_id' => 'required',
-            'city_id' => 'required'
+            'city_id' => 'required',
+            // 'images' => 'required'
         ];
     }
 }

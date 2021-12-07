@@ -26,8 +26,18 @@ class Post extends Model
         return $this->hasMany(PostImages::class);
     }
 
-    public function rating()
+    public function ratings()
     {
         return $this->hasMany(PostRating::class);
+    }
+
+    public function comment()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function avgRating()
+    {
+        return $this->ratings()->selectRaw('avg(rating) as aggregate, post_id')->groupBy('post_id');
     }
 }

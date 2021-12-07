@@ -19,20 +19,20 @@ class RatingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'rating' => 'required|between:1,5'
+            'rating' => 'required|between:1,5|integer'
         ]);
 
-        $check = PostRating::where('user_id', auth()->user()->id);
+        $check = PostRating::where('user_id', auth()->user()->id)->first();
 
         if ($check) {
             return response(['message' => 'You have already rated this listing']);
         }
 
-        $rating = new PostRating();
-        $rating->post_id = $request->post_id;
-        $rating->rating = $request->rating;
-        $rating->user_id = auth()->user()->id;
-        $rating->save();
+        $ratings = new PostRating();
+        $ratings->post_id = $request->post_id;
+        $ratings->rating = $request->rating;
+        $ratings->user_id = auth()->user()->id;
+        $ratings->save();
 
         return response(['message' => 'Success, post rated']);
     }
