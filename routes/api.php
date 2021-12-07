@@ -6,7 +6,6 @@ use App\Http\Controllers\EstateType\EstateTypeController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Ratings\RatingController;
 use App\Http\Controllers\User\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'registerUser']);
@@ -56,6 +55,16 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('/{id}', [CommentController::class, 'update']);
     Route::delete('/{id}', [CommentController::class, 'destroy']);
   });
+
+  Route::group(['prefix' => 'filter'], function() {
+    Route::get('/{country}', [PostController::class, 'filterbyCountry']);
+    Route::get('/{state}', [PostController::class, 'filterbyState']);
+    Route::get('/{city}', [PostController::class, 'filterbyCity']);
+  });
+
+  Route::get('/ratings', [PostController::class, 'filterbyRating']);
+  Route::get('/testss', [RatingController::class, 'testingit']);
+
 
   Route::get('/currentuser', [UserController::class, 'loggedInUser']);
 

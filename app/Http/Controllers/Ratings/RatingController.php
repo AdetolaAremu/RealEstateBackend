@@ -49,4 +49,13 @@ class RatingController extends Controller
 
         return response(['message' => 'Rating deleted successfully']);
     }
+
+    public function testingit()
+    {
+        return PostRating::join('posts', 'posts.id', '=', 'post_ratings.post_id')
+      ->selectRaw('*, avg(post_ratings.rating) as average_rating')
+      ->orderBy('average_rating', 'desc')
+    //   ->with('comment')
+      ->get();
+    }
 }

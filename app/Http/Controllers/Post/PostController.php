@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use App\Models\PostImages;
+use App\Models\PostRating;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -123,5 +124,48 @@ class PostController extends Controller
     $post->delete();
 
     return response(['message' => 'Post deleted'], Response::HTTP_OK);
+  }
+
+  public function filterbyCountry($country)
+  {
+    $post = Post::where('country_id', $country)->get();
+
+    return response($post, Response::HTTP_OK);
+  }
+
+  public function filterbyState($state)
+  {
+    $post = Post::where('state_id', $state)->get();
+
+    return response($post, Response::HTTP_OK);
+  }
+
+  public function filterbyCity($city)
+  {
+    $post = Post::where('city_id', $city)->get();
+
+    return response($post, Response::HTTP_OK);
+  }
+
+  public function filterbyRating()
+  {
+    // Post::query()
+    // ->selectRaw('*, avg(post_ratings.rating) as average_rating')
+    // ->join('post_ratings', 'post_ratings.post_id', 'posts.id')
+    // ->orderBy('post_ratings.post_id')
+    // ->orderByDesc('average_rating')
+    // ->get();
+    // return Post::join('post_ratings', 'post_ratings.post_id', '=', 'posts.id')
+    //   ->selectRaw('*, avg(post_ratings.rating) as average_rating')
+    //   ->orderBy('average_rating', 'desc')
+    //   ->with('comment')
+    //   ->get();
+
+    return PostRating::join('posts', 'posts.id', '=', 'post_ratings.post_id')
+        ->join('comments', 'comments.post_id', '=', 'posts.id')
+        ->selectRaw('*, avg(post_ratings.rating) as average_rating')
+        ->orderBy('average_rating', 'desc')
+        ->with('post.comment')
+        ->get();
   }
 }
