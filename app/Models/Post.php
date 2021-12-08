@@ -14,7 +14,7 @@ class Post extends Model
 
     public function type()
     {
-        return $this->belongsTo(EstateType::class);
+        return $this->belongsTo(EstateType::class, 'type');
     }
 
     public function user()
@@ -36,15 +36,6 @@ class Post extends Model
     {
         return $this->hasMany(Likes::class);
     }
-
-    // public function likedby()
-    // {
-    //     return $this->likes->contains('user_id', Auth::user()->id);
-    // }
-
-    public function isAuthUserLikedPost(){
-        return $this->likes()->where('user_id',  auth()->id())->exists();
-     }
 
     public function comment()
     {

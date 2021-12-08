@@ -29,8 +29,6 @@ class PostController extends Controller
       $post->address = $request->address;
       $post->price = $request->price;
       $post->type = $request->type;
-      $post->country_id = $request->country_id;
-      $post->state_id = $request->state_id;
       $post->city_id = $request->city_id;
       $post->save();
 
@@ -73,8 +71,6 @@ class PostController extends Controller
       $post->address = $request->address ?? $post->address;
       $post->price = $request->price ?? $post->price;
       $post->type = $request->type ?? $post->type;
-      $post->country_id = $request->country_id ?? $post->country_id;
-      $post->state_id = $request->state_id ?? $post->state_id;
       $post->city_id = $request->city_id ?? $post->city_id;
       $post->save();
 
@@ -136,23 +132,6 @@ class PostController extends Controller
     return response(['message' => 'Post deleted'], Response::HTTP_OK);
   }
 
-  public function filterbyCountry($country)
-  {
-    $post = Post::where('country_id', $country)->with('avgRating','images','comment')
-      ->orderBy('created_at', 'desc')->get();
-      // ->sortBy('avgRating');
-
-    return response($post, Response::HTTP_OK);
-  }
-
-  public function filterbyState($state)
-  {
-    $post = Post::where('state_id', $state)->with('avgRating','images','comment')
-      ->orderBy('created_at', 'desc')->get();
-
-    return response($post, Response::HTTP_OK);
-  }
-
   public function filterbyCity($city)
   {
     $post = Post::where('city_id', $city)->with('avgRating','images','comment')
@@ -160,4 +139,27 @@ class PostController extends Controller
 
     return response($post, Response::HTTP_OK);
   }
+
+  public function mylikedPosts()
+  {
+    $like = Post::join('likes','likes.post_id', '=', 'posts.id')
+      ->where('likes.user_id', auth()->user()->id)
+      ->with('images')
+      ->withCount('likes','comment')
+      ->get();
+
+    return response($like, Response::HTTP_OK);
+  }
+
+  public function postsByType()
+  {
+    $like = Post::join('estate_types','estate_types.id', '=', 'posts.type')
+      ->with('images','type')
+      ->withCount('likes','comment')
+      ->get();
+
+    return response($like, Response::HTTP_OK);
+  }
+
+  // search for posts that will contain likes,comments etc
 }

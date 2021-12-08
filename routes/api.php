@@ -43,6 +43,12 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::delete('/{id}', [PostController::class, 'destroy']);
   });
 
+  // all the login user liked posts
+  Route::get('/liked-posts', [PostController::class, 'mylikedPosts']);
+
+  // posts by types
+  Route::get('/posts/types', [PostController::class, 'postsByType']);
+
   Route::group(['prefix' => 'rating'], function() {
     Route::get('/', [RatingController::class, 'index']);
     Route::post('/', [RatingController::class, 'store']);
@@ -66,8 +72,10 @@ Route::group(['middleware' => 'auth:api'], function() {
   Route::get('/ratings', [PostController::class, 'filterbyRating']);
   Route::get('/testss', [RatingController::class, 'testingit']);
 
-  Route::post('/posts/{id}/likes', [LikeController::class, 'store']);
-
+  Route::group(['prefix' => 'likes'], function(){
+    Route::post('/{id}/post', [LikeController::class, 'store']);
+    Route::delete('/{id}/post', [LikeController::class, 'destroy']);
+  });  
 
   Route::get('/currentuser', [UserController::class, 'loggedInUser']);
 });
