@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\EstateType\EstateTypeController;
+use App\Http\Controllers\Like\LikeController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Ratings\RatingController;
 use App\Http\Controllers\User\UserController;
@@ -65,7 +66,8 @@ Route::group(['middleware' => 'auth:api'], function() {
   Route::get('/ratings', [PostController::class, 'filterbyRating']);
   Route::get('/testss', [RatingController::class, 'testingit']);
 
+  Route::post('/posts/{id}/likes', [LikeController::class, 'store']);
+
 
   Route::get('/currentuser', [UserController::class, 'loggedInUser']);
-
 });

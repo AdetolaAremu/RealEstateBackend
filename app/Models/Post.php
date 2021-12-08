@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
 {
@@ -30,6 +31,20 @@ class Post extends Model
     {
         return $this->hasMany(PostRating::class);
     }
+
+    public function likes()
+    {
+        return $this->hasMany(Likes::class);
+    }
+
+    // public function likedby()
+    // {
+    //     return $this->likes->contains('user_id', Auth::user()->id);
+    // }
+
+    public function isAuthUserLikedPost(){
+        return $this->likes()->where('user_id',  auth()->id())->exists();
+     }
 
     public function comment()
     {

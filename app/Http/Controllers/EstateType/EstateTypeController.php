@@ -40,7 +40,7 @@ class EstateTypeController extends Controller
 
     public function show($id)
     {
-        $type = EstateType::find($id);
+        $type = EstateType::with('posts.comment','posts.images')->get()->find($id);
 
         if (!$type) {
             return response(['message' => 'Estate type not found'], Response::HTTP_NOT_FOUND);

@@ -22,11 +22,11 @@ class RatingController extends Controller
             'rating' => 'required|between:1,5|integer'
         ]);
 
-        $check = PostRating::where('user_id', auth()->user()->id)->first();
+        // $check = PostRating::where('user_id', auth()->user()->id)->first();
 
-        if ($check) {
-            return response(['message' => 'You have already rated this listing']);
-        }
+        // if ($check) {
+        //     return response(['message' => 'You have already rated this listing']);
+        // }
 
         $ratings = new PostRating();
         $ratings->post_id = $request->post_id;
@@ -53,9 +53,9 @@ class RatingController extends Controller
     public function testingit()
     {
         return PostRating::join('posts', 'posts.id', '=', 'post_ratings.post_id')
-      ->selectRaw('*, avg(post_ratings.rating) as average_rating')
-      ->orderBy('average_rating', 'desc')
-    //   ->with('comment')
-      ->get();
+        ->selectRaw('*, avg(post_ratings.rating) as average_rating')
+        ->orderBy('average_rating', 'desc')
+        //   ->with('comment')
+        ->get();
     }
 }

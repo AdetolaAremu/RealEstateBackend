@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use App\Models\PostImages;
-use App\Models\PostRating;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
 class PostController extends Controller
 {
   public function index()
@@ -26,6 +24,7 @@ class PostController extends Controller
     DB::beginTransaction();
     try {
       $post = new Post();
+      $post->user_id = auth()->user()->id;
       $post->text = $request->text;
       $post->address = $request->address;
       $post->price = $request->price;
@@ -35,7 +34,10 @@ class PostController extends Controller
       $post->city_id = $request->city_id;
       $post->save();
 
-      for ($i=0; $i < count($request->postimg); $i++) { 
+      for ($i=0; $i < count($request->postimg); $i++) {
+
+        $request->validate(['images'=>'mimes:png,jpg,jpeg']);
+
         $file = $request->postimg[$i];
         $imageName = time() . Str::random(4) . '.' . $request->postimg[$i]->extension();
         $path = "images/realestateimages";
@@ -102,6 +104,14 @@ class PostController extends Controller
     }
   }
 
+  public function myPosts()
+  {
+    $post = Post::where('user_id', auth()->user()->id)->with('comment','ratings','images')
+      ->orderBy('created_at', 'desc')->get();
+
+    return response($post, Response::HTTP_OK);
+  }
+
   public function show($id)
   {
     $post = Post::with('images','comment','avgRating')->get()->find($id);
@@ -128,44 +138,26 @@ class PostController extends Controller
 
   public function filterbyCountry($country)
   {
-    $post = Post::where('country_id', $country)->get();
+    $post = Post::where('country_id', $country)->with('avgRating','images','comment')
+      ->orderBy('created_at', 'desc')->get();
+      // ->sortBy('avgRating');
 
     return response($post, Response::HTTP_OK);
   }
 
   public function filterbyState($state)
   {
-    $post = Post::where('state_id', $state)->get();
+    $post = Post::where('state_id', $state)->with('avgRating','images','comment')
+      ->orderBy('created_at', 'desc')->get();
 
     return response($post, Response::HTTP_OK);
   }
 
   public function filterbyCity($city)
   {
-    $post = Post::where('city_id', $city)->get();
+    $post = Post::where('city_id', $city)->with('avgRating','images','comment')
+      ->orderBy('created_at', 'desc')->get();
 
     return response($post, Response::HTTP_OK);
-  }
-
-  public function filterbyRating()
-  {
-    // Post::query()
-    // ->selectRaw('*, avg(post_ratings.rating) as average_rating')
-    // ->join('post_ratings', 'post_ratings.post_id', 'posts.id')
-    // ->orderBy('post_ratings.post_id')
-    // ->orderByDesc('average_rating')
-    // ->get();
-    // return Post::join('post_ratings', 'post_ratings.post_id', '=', 'posts.id')
-    //   ->selectRaw('*, avg(post_ratings.rating) as average_rating')
-    //   ->orderBy('average_rating', 'desc')
-    //   ->with('comment')
-    //   ->get();
-
-    return PostRating::join('posts', 'posts.id', '=', 'post_ratings.post_id')
-        ->join('comments', 'comments.post_id', '=', 'posts.id')
-        ->selectRaw('*, avg(post_ratings.rating) as average_rating')
-        ->orderBy('average_rating', 'desc')
-        ->with('post.comment')
-        ->get();
   }
 }

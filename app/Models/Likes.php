@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EstateType extends Model
+class Likes extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['id'];
 
-    public function posts()
+    public function post()
     {
-        return $this->hasMany(Post::class, 'type');
+        return $this->belongsTo(Post::class);
     }
 }

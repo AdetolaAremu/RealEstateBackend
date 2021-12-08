@@ -18,12 +18,12 @@ class CreatePostsTable extends Migration
             $table->string('text');
             $table->string('address');
             $table->decimal('price');
+            $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('type')->references('id')->on('estate_types');
             $table->foreignId('country_id')->references('id')->on('countries');
             $table->foreignId('state_id')->references('id')->on('states');
             $table->foreignId('city_id')->references('id')->on('cities');
             $table->boolean('active')->default(1);
-            $table->boolean('featured')->default(0);
             $table->timestamps();
         });
     }
