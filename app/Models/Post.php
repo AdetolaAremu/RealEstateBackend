@@ -46,4 +46,9 @@ class Post extends Model
     {
         return $this->ratings()->selectRaw('avg(rating) as aggregate, post_id')->groupBy('post_id');
     }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 }

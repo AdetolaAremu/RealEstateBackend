@@ -5,21 +5,18 @@ namespace App\Http\Controllers\Like;
 use App\Http\Controllers\Controller;
 use App\Models\Likes;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-
 class LikeController extends Controller
 {
     public function store($id)
     {
-        $like = Likes::find($id);
+        $post = Post::find($id);
 
-        if (!$like) {
+        if (!$post) {
             return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
         }
         
-        if(Likes::where('user_id', auth()->id())->where('post_id', $id)->exists() ){
+        if(Likes::where('user_id', auth()->user()->id)->where('post_id', $id)->exists() ){
             return response(['message' => 'You have already liked this post'], Response::HTTP_BAD_REQUEST);
         }
 

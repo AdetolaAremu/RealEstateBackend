@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Comment\CommentController;
+use App\Http\Controllers\Country\CountryController;
 use App\Http\Controllers\EstateType\EstateTypeController;
 use App\Http\Controllers\Like\LikeController;
 use App\Http\Controllers\Post\PostController;
@@ -11,6 +12,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'registerUser']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// get all city
+Route::get('/cities', [CountryController::class, 'city']);
+
+// posts
+Route::get('/all-posts', [PostController::class, 'index']);
+Route::get('/posts/{id}', [PostController::class, 'show']);
 
 Route::group(['middleware' => 'auth:api'], function() {
 
@@ -36,18 +44,25 @@ Route::group(['middleware' => 'auth:api'], function() {
 
   // posts
   Route::group(['prefix' => 'post'], function() {
-    Route::get('/', [PostController::class, 'index']);
     Route::post('/', [PostController::class, 'store']);
     Route::put('/{id}', [PostController::class, 'update']);
-    Route::get('/{id}', [PostController::class, 'show']);
     Route::delete('/{id}', [PostController::class, 'destroy']);
   });
+
+  // get logged in user posts
+  Route::get('/my-posts', [PostController::class, 'myPosts']);
+
+  // get logged in user each post
+  Route::get('/my-each-posts/{id}', [PostController::class, 'EachLoggedInUserPost']);
 
   // all the login user liked posts
   Route::get('/liked-posts', [PostController::class, 'mylikedPosts']);
 
   // posts by types
   Route::get('/posts/types', [PostController::class, 'postsByType']);
+
+  // search for posts
+  Route::post('posts/search', [PostController::class, 'searchPost']);
 
   Route::group(['prefix' => 'rating'], function() {
     Route::get('/', [RatingController::class, 'index']);

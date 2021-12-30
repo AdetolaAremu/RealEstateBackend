@@ -24,13 +24,12 @@ class PostRequest extends FormRequest
     public function rules()
     {
         return [
+            'title' => 'required|max:150',
             'text' => 'required|max:400',
             'address' => 'required|max:255',
             'price' => 'required|numeric',
             'type' => 'required',
-            'country_id' => 'required',
-            'state_id' => 'required',
-            'city_id' => 'required',
+            'city' => 'required',
             // 'images' => 'required'
         ];
     }

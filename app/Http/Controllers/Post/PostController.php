@@ -10,11 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 class PostController extends Controller
 {
   public function index()
   {
-    $posts = Post::with('images','comment','avgRating')->withCount('ratings')->get();
+    $posts = Post::with('images','comment')->withCount('likes')->get();
 
     return response($posts, Response::HTTP_OK);
   }
@@ -25,28 +26,43 @@ class PostController extends Controller
     try {
       $post = new Post();
       $post->user_id = auth()->user()->id;
+      $post->title = $request->title;
       $post->text = $request->text;
       $post->address = $request->address;
       $post->price = $request->price;
       $post->type = $request->type;
-      $post->city_id = $request->city_id;
+      $post->city = $request->city;
       $post->save();
 
-      for ($i=0; $i < count($request->postimg); $i++) {
+      $file = $request->file('images');
+      $imageName = time() . Str::random(4) . '.' . $request->file('images')->extension();
+      $path = "home/assets/postimages";
+      $documentURL = $path . '/' . $imageName;
+      $file->move($path, $imageName);
 
-        $request->validate(['images'=>'mimes:png,jpg,jpeg']);
+      // $path = $request->file('image')->store('post_images', 's3');
 
-        $file = $request->postimg[$i];
-        $imageName = time() . Str::random(4) . '.' . $request->postimg[$i]->extension();
-        $path = "images/realestateimages";
-        $documentURL = $path . '/' . $imageName;
-        $file->move($path, $imageName);
+      PostImages::create([
+        "post_id" => $post->id,
+        "images" => $documentURL,
+      ]);
 
-        PostImages::create([
-          "post_id" => $post->id,
-          "images" => $documentURL,
-        ]);
-      }
+      // for ($i=0; $i < count($request->postimg); $i++) {
+
+      //   $request->validate(['images'=>'mimes:png,jpg,jpeg']);
+
+      //   $file = $request->postimg[$i];
+      //   $imageName = time() . Str::random(4) . '.' . $request->postimg[$i]->extension();
+      //   $path = "images/realestateimages";
+      //   $documentURL = $path . '/' . $imageName;
+      //   $file->move($path, $imageName);
+
+      //   PostImages::create([
+      //     "post_id" => $post->id,
+      //     "images" => $documentURL,
+      //   ]);
+      // }
+
 
       DB::commit();
       return response(['message' => 'Post created successfully!'], Response::HTTP_CREATED);
@@ -71,13 +87,17 @@ class PostController extends Controller
       $post->address = $request->address ?? $post->address;
       $post->price = $request->price ?? $post->price;
       $post->type = $request->type ?? $post->type;
-      $post->city_id = $request->city_id ?? $post->city_id;
+      $post->city_id = $request->city ?? $post->city;
       $post->save();
 
       if ($request->has('postimg')) {
         for ($i=0; $i < count($request->postimg); $i++) { 
           
-          PostImages::where('post_id', $id)->delete();
+          PostImages::where('post_id', $id)->each(function ($image) {
+            if (File::exists(public_path($image->images))) {
+                File::delete(public_path($image->images));
+            }
+          });
         
           $file = $request->postimg[$i];
           $imageName = time() . Str::random(4) . '.' . $request->postimg[$i]->extension();
@@ -100,6 +120,7 @@ class PostController extends Controller
     }
   }
 
+  // get logged in user estate posts
   public function myPosts()
   {
     $post = Post::where('user_id', auth()->user()->id)->with('comment','ratings','images')
@@ -108,9 +129,23 @@ class PostController extends Controller
     return response($post, Response::HTTP_OK);
   }
 
+  // get a logged user estate post
+  public function EachLoggedInUserPost($id)
+  {
+    $post = Post::where('user_id', auth()->user()->id)->find($id);
+
+    if (!$post) {
+      return response(['message' => 'The post does not exist or it does not belong to you'], 
+      Response::HTTP_NOT_FOUND);
+    }
+
+    return response($post, Response::HTTP_OK);
+  }
+
+  // get a real estate post
   public function show($id)
   {
-    $post = Post::with('images','comment','avgRating')->get()->find($id);
+    $post = Post::with('images','comment')->withCount('likes')->get()->find($id);
 
     if (!$post) {
       return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
@@ -127,6 +162,14 @@ class PostController extends Controller
       return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
     }
 
+    PostImages::where('post_id', $id)->each(function ($image) {
+      if (File::exists(public_path($image->images))) {
+          File::delete(public_path($image->images));
+      }
+    });
+
+    $post->images()->delete();
+    
     $post->delete();
 
     return response(['message' => 'Post deleted'], Response::HTTP_OK);
@@ -161,5 +204,15 @@ class PostController extends Controller
     return response($like, Response::HTTP_OK);
   }
 
-  // search for posts that will contain likes,comments etc
+  // search for posts
+  public function searchPost(Request $request)
+  {
+    $post = Post::where("text", "LIKE", "%" . $request->q . "%")
+        ->orwhere("address", "LIKE", "%" . $request->q . "%")
+        ->with('images:id,post_id,images','user:id,username', 'city:id,name')
+        ->withCount('likes','comment')
+        ->get();
+        
+    return $post;
+  }
 }

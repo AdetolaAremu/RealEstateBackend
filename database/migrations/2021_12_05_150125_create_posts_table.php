@@ -15,12 +15,13 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
             $table->string('text');
+            $table->string('city');
             $table->string('address');
             $table->decimal('price');
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('type')->references('id')->on('estate_types');
-            $table->foreignId('city_id')->references('id')->on('cities');
             $table->boolean('active')->default(1);
             $table->timestamps();
         });

@@ -17,7 +17,6 @@ class CreateEstateTypesTable extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('active')->default(1);
-            $table->timestamps();
         });
     }
 

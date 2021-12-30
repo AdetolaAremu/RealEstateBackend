@@ -11,6 +11,8 @@ class EstateType extends Model
 
     protected $guarded = ['id'];
 
+    public $timestamps = false;
+
     public function posts()
     {
         return $this->hasMany(Post::class, 'type');
