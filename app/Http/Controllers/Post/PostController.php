@@ -77,17 +77,17 @@ class PostController extends Controller
     $post = Post::find($id);
 
     if (!$post) {
-      return response(['message' => 'Post not found']);
+      return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
     }
 
     DB::beginTransaction();
 
     try {
-      $post->text = $request->text ?? $post->text;
+      $post->title = $request->title ?? $post->title;
       $post->address = $request->address ?? $post->address;
       $post->price = $request->price ?? $post->price;
       $post->type = $request->type ?? $post->type;
-      $post->city_id = $request->city ?? $post->city;
+      $post->city = $request->city ?? $post->city;
       $post->save();
 
       if ($request->has('postimg')) {

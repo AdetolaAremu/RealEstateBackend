@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -20,7 +21,11 @@ class CommentController extends Controller
     {
         $request->validate(['text' => 'required', 'post_id' => 'required']);
 
-        Comment::create($request->all());
+        Comment::create([
+            "text" => $request->text,
+            "post_id" => $request->post_id,
+            "user_id" => Auth::user()->id
+        ]);
 
         return response(['message' => 'Comment created successfully'], Response::HTTP_CREATED);
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\EstateType\EstateTypeController;
 use App\Http\Controllers\Like\LikeController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Ratings\RatingController;
+use App\Http\Controllers\Stats\StatisticsController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -93,4 +94,6 @@ Route::group(['middleware' => 'auth:api'], function() {
   });  
 
   Route::get('/currentuser', [UserController::class, 'loggedInUser']);
+
+  Route::get('/user-stats', [StatisticsController::class, 'userStats']);
 });

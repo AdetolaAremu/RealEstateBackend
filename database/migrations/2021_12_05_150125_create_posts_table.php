@@ -23,6 +23,7 @@ class CreatePostsTable extends Migration
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('type')->references('id')->on('estate_types');
             $table->boolean('active')->default(1);
+            $table->boolean('featured')->default(0);
             $table->timestamps();
         });
     }
