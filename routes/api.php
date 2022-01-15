@@ -21,6 +21,9 @@ Route::get('/cities', [CountryController::class, 'city']);
 Route::get('/all-posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
 
+// get all comments belonging to a post
+Route::get('/post-comments/{id}', [CommentController::class, 'postComment']);
+
 Route::group(['middleware' => 'auth:api'], function() {
 
   Route::post('/logout', [AuthController::class, 'logout']);
@@ -60,7 +63,7 @@ Route::group(['middleware' => 'auth:api'], function() {
   Route::get('/liked-posts', [PostController::class, 'mylikedPosts']);
 
   // posts by types
-  Route::get('/posts/types', [PostController::class, 'postsByType']);
+  Route::get('/posts/type/{type}', [PostController::class, 'postsByType']);
 
   // search for posts
   Route::post('posts/search', [PostController::class, 'searchPost']);
@@ -80,10 +83,10 @@ Route::group(['middleware' => 'auth:api'], function() {
   });
 
   Route::group(['prefix' => 'filter'], function() {
-    Route::get('/{country}', [PostController::class, 'filterbyCountry']);
-    Route::get('/{state}', [PostController::class, 'filterbyState']);
-    Route::get('/{city}', [PostController::class, 'filterbyCity']);
+    Route::get('/{city}', [PostController::class, 'filterByCity']);
   });
+
+  Route::get('/cities', [PostController::class, 'getTheCityInDB']);
 
   Route::get('/ratings', [PostController::class, 'filterbyRating']);
   Route::get('/testss', [RatingController::class, 'testingit']);
@@ -91,7 +94,10 @@ Route::group(['middleware' => 'auth:api'], function() {
   Route::group(['prefix' => 'likes'], function(){
     Route::post('/{id}/post', [LikeController::class, 'store']);
     Route::delete('/{id}/post', [LikeController::class, 'destroy']);
-  });  
+    Route::get('/{id}', [LikeController::class, 'likesCountPerPost']);
+  });
+
+  Route::get('/check-liked/{id}', [LikeController::class, 'checkLiked']);
 
   Route::get('/currentuser', [UserController::class, 'loggedInUser']);
 

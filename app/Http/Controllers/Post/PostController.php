@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostImages;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class PostController extends Controller
 {
   public function index()
   {
-    $posts = Post::with('images','comment')->withCount('likes')->get();
+    $posts = Post::with('images','comment','type')->withCount('likes')->get();
 
     return response($posts, Response::HTTP_OK);
   }
@@ -145,7 +146,8 @@ class PostController extends Controller
   // get a real estate post
   public function show($id)
   {
-    $post = Post::with('images','comment')->withCount('likes')->get()->find($id);
+    $post = Post::with('images','comment','type','user:id,first_name,last_name,email,phone_number,username')
+      ->withCount('likes')->get()->find($id);
 
     if (!$post) {
       return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
@@ -175,14 +177,28 @@ class PostController extends Controller
     return response(['message' => 'Post deleted'], Response::HTTP_OK);
   }
 
-  public function filterbyCity($city)
+  // get all the city in the database only so we can use it to filter by city
+  public function getTheCityInDB()
   {
-    $post = Post::where('city_id', $city)->with('avgRating','images','comment')
-      ->orderBy('created_at', 'desc')->get();
+    $post = Post::select('id','city')->groupBy('city')->get();
 
     return response($post, Response::HTTP_OK);
   }
 
+  // filter by the city we have in the database
+  public function filterByCity($city)
+  {
+    $post = Post::where('city', $city)->with('likes','images','comment')
+      ->latest()->withCount('likes')->get();
+
+    if (!$post) {
+      return response(['message' => 'There are no search results for this city']);
+    }
+
+    return response($post, Response::HTTP_OK);
+  }
+
+  // get all the posts that has been liked by the logged in user
   public function mylikedPosts()
   {
     $like = Post::join('likes','likes.post_id', '=', 'posts.id')
@@ -194,25 +210,44 @@ class PostController extends Controller
     return response($like, Response::HTTP_OK);
   }
 
-  public function postsByType()
+  // get post by types
+  public function postsByType($type)
   {
-    $like = Post::join('estate_types','estate_types.id', '=', 'posts.type')
+    $post = Post::join('estate_types','estate_types.id', '=', 'posts.type')
+      ->where('estate_types.name', $type)
       ->with('images','type')
       ->withCount('likes','comment')
       ->get();
+    
+    if (!$post) {
+      return response(['message' => 'There are no search results for this city']);
+    }
 
-    return response($like, Response::HTTP_OK);
+    return response($post, Response::HTTP_OK);
   }
 
   // search for posts
   public function searchPost(Request $request)
   {
     $post = Post::where("text", "LIKE", "%" . $request->q . "%")
-        ->orwhere("address", "LIKE", "%" . $request->q . "%")
-        ->with('images:id,post_id,images','user:id,username', 'city:id,name')
-        ->withCount('likes','comment')
-        ->get();
+      ->orwhere("title", "LIKE", "%". $request->q . "%")
+      ->orwhere("city", "LIKE", "%". $request->q . "%")
+      ->orwhere("address", "LIKE", "%" . $request->q . "%")
+      ->with('images:id,post_id,images','user:id,username','type')
+      ->withCount('likes','comment')
+      ->get();
+    
+    if (!$post) {
+      return response(['message' => 'There are no search results for this city']);
+    }
         
-    return $post;
+    return response($post, Response::HTTP_OK);
   }
 }
+
+// having dupliate and occurence
+// $duplicated = DB::table('users')
+//   ->select('name', DB::raw('count(`name`) as occurences'))
+//   ->groupBy('name')
+//   ->having('occurences', '>', 1)
+//   ->get();

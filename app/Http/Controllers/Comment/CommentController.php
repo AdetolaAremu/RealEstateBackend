@@ -66,4 +66,12 @@ class CommentController extends Controller
 
         return response(['message' => 'Comment deleted successfully'], Response::HTTP_OK);
     }
+
+    // get all comments belonging to a post
+    public function postComment($id)
+    {
+        $post = Comment::where('post_id', $id)->with('user')->latest()->get();
+
+        return response($post, Response::HTTP_OK);
+    }
 }
