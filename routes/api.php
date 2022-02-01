@@ -24,6 +24,15 @@ Route::get('/posts/{id}', [PostController::class, 'show']);
 // get all comments belonging to a post
 Route::get('/post-comments/{id}', [CommentController::class, 'postComment']);
 
+// get all likes belonging to a post
+Route::get('/likes/{id}', [LikeController::class, 'likesCountPerPost']);
+
+// get all the cities in the DB for filtering purpose
+Route::get('/cities', [PostController::class, 'getTheCityInDB']);
+
+// all the types in the DB
+Route::get('type/', [EstateTypeController::class, 'index']);
+
 Route::group(['middleware' => 'auth:api'], function() {
 
   Route::post('/logout', [AuthController::class, 'logout']);
@@ -39,7 +48,6 @@ Route::group(['middleware' => 'auth:api'], function() {
 
   // estate type
   Route::group(['prefix' => 'type'], function() {
-    Route::get('/', [EstateTypeController::class, 'index']);
     Route::post('/', [EstateTypeController::class, 'store']);
     Route::get('/{id}', [EstateTypeController::class, 'show']);
     Route::put('/{id}', [EstateTypeController::class, 'update']);
@@ -86,15 +94,12 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/{city}', [PostController::class, 'filterByCity']);
   });
 
-  Route::get('/cities', [PostController::class, 'getTheCityInDB']);
-
   Route::get('/ratings', [PostController::class, 'filterbyRating']);
   Route::get('/testss', [RatingController::class, 'testingit']);
 
   Route::group(['prefix' => 'likes'], function(){
     Route::post('/{id}/post', [LikeController::class, 'store']);
     Route::delete('/{id}/post', [LikeController::class, 'destroy']);
-    Route::get('/{id}', [LikeController::class, 'likesCountPerPost']);
   });
 
   Route::get('/check-liked/{id}', [LikeController::class, 'checkLiked']);

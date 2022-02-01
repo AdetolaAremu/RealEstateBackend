@@ -35,18 +35,18 @@ class PostController extends Controller
       $post->city = $request->city;
       $post->save();
 
-      $file = $request->file('images');
-      $imageName = time() . Str::random(4) . '.' . $request->file('images')->extension();
-      $path = "home/assets/postimages";
-      $documentURL = $path . '/' . $imageName;
-      $file->move($path, $imageName);
+      // $file = $request->file('images');
+      // $imageName = time() . Str::random(4) . '.' . $request->file('images')->extension();
+      // $path = "home/assets/postimages";
+      // $documentURL = $path . '/' . $imageName;
+      // $file->move($path, $imageName);
 
       // $path = $request->file('image')->store('post_images', 's3');
 
-      PostImages::create([
-        "post_id" => $post->id,
-        "images" => $documentURL,
-      ]);
+      // PostImages::create([
+      //   "post_id" => $post->id,
+      //   "images" => $documentURL,
+      // ]);
 
       // for ($i=0; $i < count($request->postimg); $i++) {
 
