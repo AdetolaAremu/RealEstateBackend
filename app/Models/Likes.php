@@ -9,10 +9,10 @@ class Likes extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id'];
+    protected $guarded = ['id'];
 
     public function post()
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Post::class, 'slug');
     }
 }

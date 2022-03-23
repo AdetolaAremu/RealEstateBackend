@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCommentsTable extends Migration
+class AddSlugToPostsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class CreateCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->string('slug');
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->string('text');
-            $table->timestamps();
+        Schema::table('posts', function (Blueprint $table) {
+            $table->string('slug')->unique();
         });
     }
 
@@ -29,6 +25,8 @@ class CreateCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('slug');
+        });
     }
 }

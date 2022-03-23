@@ -24,6 +24,7 @@ class CreatePostsTable extends Migration
             $table->foreignId('type')->references('id')->on('estate_types');
             $table->boolean('active')->default(1);
             $table->boolean('featured')->default(0);
+            $table->boolean('main')->default(0);
             $table->timestamps();
         });
     }

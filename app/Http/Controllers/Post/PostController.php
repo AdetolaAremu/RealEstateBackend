@@ -12,6 +12,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+
 class PostController extends Controller
 {
   public function index()
@@ -33,37 +35,17 @@ class PostController extends Controller
       $post->price = $request->price;
       $post->type = $request->type;
       $post->city = $request->city;
+      // $post->featured = $request->featured
+      $post->slug = Str::slug($request->title);
       $post->save();
 
-      // $file = $request->file('images');
-      // $imageName = time() . Str::random(4) . '.' . $request->file('images')->extension();
-      // $path = "home/assets/postimages";
-      // $documentURL = $path . '/' . $imageName;
-      // $file->move($path, $imageName);
+      $documentURL = $request->file('images')->storePublicly('post_images', 's3');
 
-      // $path = $request->file('image')->store('post_images', 's3');
-
-      // PostImages::create([
-      //   "post_id" => $post->id,
-      //   "images" => $documentURL,
-      // ]);
-
-      // for ($i=0; $i < count($request->postimg); $i++) {
-
-      //   $request->validate(['images'=>'mimes:png,jpg,jpeg']);
-
-      //   $file = $request->postimg[$i];
-      //   $imageName = time() . Str::random(4) . '.' . $request->postimg[$i]->extension();
-      //   $path = "images/realestateimages";
-      //   $documentURL = $path . '/' . $imageName;
-      //   $file->move($path, $imageName);
-
-      //   PostImages::create([
-      //     "post_id" => $post->id,
-      //     "images" => $documentURL,
-      //   ]);
-      // }
-
+      PostImages::create([
+        "post_id" => $post->id,
+        "images" => basename($documentURL),
+        "url" => Storage::disk('s3')->url($documentURL)
+      ]);
 
       DB::commit();
       return response(['message' => 'Post created successfully!'], Response::HTTP_CREATED);
@@ -90,28 +72,6 @@ class PostController extends Controller
       $post->type = $request->type ?? $post->type;
       $post->city = $request->city ?? $post->city;
       $post->save();
-
-      if ($request->has('postimg')) {
-        for ($i=0; $i < count($request->postimg); $i++) { 
-          
-          PostImages::where('post_id', $id)->each(function ($image) {
-            if (File::exists(public_path($image->images))) {
-                File::delete(public_path($image->images));
-            }
-          });
-        
-          $file = $request->postimg[$i];
-          $imageName = time() . Str::random(4) . '.' . $request->postimg[$i]->extension();
-          $path = "images/realestateimages";
-          $documentURL = $path . '/' . $imageName;
-          $file->move($path, $imageName);
-
-          PostImages::create([
-            "post_id" => $id,
-            "images" => $documentURL,
-          ]);
-        }
-      }
 
       DB::commit();
       return response(['message' => 'Post updated successfully'], Response::HTTP_OK);
@@ -146,6 +106,8 @@ class PostController extends Controller
   // get a real estate post
   public function show($id)
   {
+    $id = Post::where('slug', $id)->first();
+
     $post = Post::with('images','comment','type','user:id,first_name,last_name,email,phone_number,username')
       ->withCount('likes')->get()->find($id);
 
@@ -165,12 +127,8 @@ class PostController extends Controller
     }
 
     PostImages::where('post_id', $id)->each(function ($image) {
-      if (File::exists(public_path($image->images))) {
-          File::delete(public_path($image->images));
-      }
+      Storage::disk('s3')->delete('post_images/'.$image->images);
     });
-
-    $post->images()->delete();
     
     $post->delete();
 
@@ -201,7 +159,7 @@ class PostController extends Controller
   // get all the posts that has been liked by the logged in user
   public function mylikedPosts()
   {
-    $like = Post::join('likes','likes.post_id', '=', 'posts.id')
+    $like = Post::join('likes','likes.slug', '=', 'posts.slug')
       ->where('likes.user_id', auth()->user()->id)
       ->with('images')
       ->withCount('likes','comment')
@@ -244,10 +202,3 @@ class PostController extends Controller
     return response($post, Response::HTTP_OK);
   }
 }
-
-// having dupliate and occurence
-// $duplicated = DB::table('users')
-//   ->select('name', DB::raw('count(`name`) as occurences'))
-//   ->groupBy('name')
-//   ->having('occurences', '>', 1)
-//   ->get();

@@ -9,10 +9,7 @@ class PostImages extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'post_id',
-        'images'
-    ];
+    protected $guarded = ['id'];
 
     public function post()
     {

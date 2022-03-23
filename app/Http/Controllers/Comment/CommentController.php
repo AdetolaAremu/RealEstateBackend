@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Comment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -19,11 +20,11 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['text' => 'required', 'post_id' => 'required']);
+        $request->validate(['text' => 'required', 'slug' => 'required']);
 
         Comment::create([
             "text" => $request->text,
-            "post_id" => $request->post_id,
+            "slug" => $request->slug,
             "user_id" => Auth::user()->id
         ]);
 
@@ -38,7 +39,7 @@ class CommentController extends Controller
             return response(['message' => 'Comment not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $comment->update($request->all());
+        $comment->update($request->only('text'));
 
         return response(['message' => 'Comment updated successfully'], Response::HTTP_CREATED);
     }
@@ -70,7 +71,7 @@ class CommentController extends Controller
     // get all comments belonging to a post
     public function postComment($id)
     {
-        $post = Comment::where('post_id', $id)->with('user')->latest()->get();
+        $post = Comment::where('slug', $id)->with('user')->latest()->get();
 
         return response($post, Response::HTTP_OK);
     }
