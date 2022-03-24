@@ -107,6 +107,5 @@ Route::group(['middleware' => 'auth:api'], function() {
   Route::get('/currentuser', [UserController::class, 'loggedInUser']);
 
   Route::get('/user-stats', [StatisticsController::class, 'userStats']);
-
-  // Route::get('/{image}', [PostController::class, 'showImage']);
+  Route::get('/admin-stats', [StatisticsController::class, 'adminStats']);
 });

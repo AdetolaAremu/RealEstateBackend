@@ -22,7 +22,10 @@ class CreateUsersTable extends Migration
             $table->string('phone_number');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('role')->nullable();
             $table->boolean('active')->default(1);
+            $table->string('image_file_name')->nullable();
+            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }

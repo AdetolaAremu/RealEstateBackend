@@ -42,8 +42,14 @@ class EstateTypeController extends Controller
     {
         $type = EstateType::with('posts.comment','posts.images')->get()->find($id);
 
+        $Alltypes = EstateType::get();
+
         if (!$type) {
             return response(['message' => 'Estate type not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($type === 'All') {
+            return response($Alltypes, Response::HTTP_OK);
         }
 
         return response($type, Response::HTTP_OK);

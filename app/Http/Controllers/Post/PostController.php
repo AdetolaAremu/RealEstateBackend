@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
-use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostImages;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -178,7 +176,7 @@ class PostController extends Controller
       ->get();
     
     if (!$post) {
-      return response(['message' => 'There are no search results for this city']);
+      return response(['message' => 'There are no search results for this category'], Response::HTTP_NOT_FOUND);
     }
 
     return response($post, Response::HTTP_OK);
@@ -191,7 +189,7 @@ class PostController extends Controller
       ->orwhere("title", "LIKE", "%". $request->q . "%")
       ->orwhere("city", "LIKE", "%". $request->q . "%")
       ->orwhere("address", "LIKE", "%" . $request->q . "%")
-      ->with('images:id,post_id,images','user:id,username','type')
+      ->with('images:id,post_id,images,url','user:id,username','type')
       ->withCount('likes','comment')
       ->get();
     

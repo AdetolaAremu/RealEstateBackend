@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     public function allUsers()
@@ -33,6 +33,20 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
+        $documentURL = $request->file('image_file_name')->storePublicly('profile_image', 's3');
+        // validation on file size for this and post image, work on it
+        // check if the image file name of the user is not null, if it is not null, delete the file in aws
+        if ($user->image_file_name !== null) {
+            Storage::disk('s3')->delete('profile_image/'.$user->image_file_name);
+
+            if($request->has('image_file_name')){
+                $user->update($request->only('first_name', 'last_name', 'middle_name') + [
+                    'image_file_name' => basename($documentURL),
+                    "url" => Storage::disk('s3')->url($documentURL)
+                ]);
+            }
+        }
+       
         $user->update($request->only('first_name', 'last_name', 'middle_name'));
 
         return response(['message' => 'User data updated successfully!'], Response::HTTP_OK);
