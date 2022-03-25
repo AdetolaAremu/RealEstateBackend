@@ -13,11 +13,8 @@ class Post extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = [
-        'slug' => 'string',
-    ];
     // public $keyType = 'string';
-    // public $primaryKey = "";
+    public $primaryKey = "slug";
 
     public function getSlugOptions() : SlugOptions
     {
