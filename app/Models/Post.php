@@ -12,7 +12,8 @@ class Post extends Model
     use HasFactory, HasSlug;
 
     protected $guarded = ['id'];
-    public $keyType = 'string';
+    // public $keyType = 'string';
+    // public $primaryKey = "";
 
     public function getSlugOptions() : SlugOptions
     {
@@ -48,7 +49,7 @@ class Post extends Model
 
     public function likes()
     {
-        return $this->hasMany(Likes::class, 'slug');
+        return $this->hasMany(Likes::class);
     }
 
     public function comment()
