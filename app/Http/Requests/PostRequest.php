@@ -30,7 +30,7 @@ class PostRequest extends FormRequest
             'price' => 'required|numeric',
             'type' => 'required',
             'city' => 'required',
-            // 'images' => 'required'
+            // 'images' => 'required|max:150'
         ];
     }
 }

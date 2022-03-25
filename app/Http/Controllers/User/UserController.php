@@ -33,21 +33,18 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $documentURL = $request->file('image_file_name')->storePublicly('profile_image', 's3');
-        // validation on file size for this and post image, work on it
-        // check if the image file name of the user is not null, if it is not null, delete the file in aws
-        if ($user->image_file_name !== null) {
-            Storage::disk('s3')->delete('profile_image/'.$user->image_file_name);
+        $documentURL = $request->file('image_file_name')->storePublicly('profile_images', 's3');
 
-            if($request->has('image_file_name')){
-                $user->update($request->only('first_name', 'last_name', 'middle_name') + [
-                    'image_file_name' => basename($documentURL),
-                    "url" => Storage::disk('s3')->url($documentURL)
-                ]);
-            }
-        }
-       
-        $user->update($request->only('first_name', 'last_name', 'middle_name'));
+        // $user->image_file_name = basename($documentURL);
+        // $user->url = Storage::disk('s3')->url($documentURL);
+        // $user->save();
+
+        $user->first_name = $request->first_name ?? $user->first_name;
+        $user->last_name = $request->last_name ?? $user->last_name;
+        $user->middle_name = $request->middle_name ?? $user->middle_name;
+        // $user->image_file_name = basename($documentURL);
+        // $user->url = Storage::disk('s3')->url($documentURL);
+        $user->update();
 
         return response(['message' => 'User data updated successfully!'], Response::HTTP_OK);
     }
