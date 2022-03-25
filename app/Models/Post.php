@@ -12,6 +12,7 @@ class Post extends Model
     use HasFactory, HasSlug;
 
     protected $guarded = ['id'];
+    public $keyType = 'string';
 
     public function getSlugOptions() : SlugOptions
     {
