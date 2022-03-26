@@ -10,9 +10,11 @@ class LikeController extends Controller
 {
     public function store($id)
     {
-        $id = Post::where('id', $id)->first();
+        $getPostID = Post::where('id', $id)->first();
 
         $post = Post::find($id);
+
+        dd($post->id);
 
         if (!$post) {
             return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
@@ -23,7 +25,7 @@ class LikeController extends Controller
         }
 
         $like = new Likes();
-        $like->post_id = $id->id;
+        $like->post_id = $getPostID->id;
         $like->user_id = auth()->user()->id;
         $like->save();
 
