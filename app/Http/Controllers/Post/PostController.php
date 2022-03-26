@@ -37,7 +37,6 @@ class PostController extends Controller
       // $post->featured = $request->featured
       $post->slug = Str::slug($request->title);
       $post->save();
-      dd($post->slug);
 
       $documentURL = $request->file('images')->storePublicly('post_images', 's3');
 
