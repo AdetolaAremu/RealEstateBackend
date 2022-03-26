@@ -71,7 +71,7 @@ class CommentController extends Controller
     // get all comments belonging to a post
     public function postComment($id)
     {
-        $post = Comment::where('slug', $id)->with('user')->latest()->get();
+        $post = Comment::where('id', $id)->with('user')->latest()->get();
 
         return response($post, Response::HTTP_OK);
     }

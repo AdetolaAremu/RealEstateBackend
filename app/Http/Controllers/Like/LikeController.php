@@ -53,7 +53,7 @@ class LikeController extends Controller
 
     public function checkLiked($id)
     {
-        $check = Likes::where('user_id', auth()->user()->id)->where('slug', $id)->exists();
+        $check = Likes::where('user_id', auth()->user()->id)->where('post_id', $id)->exists();
 
         if (!$check) {
             return response(0, Response::HTTP_OK);
