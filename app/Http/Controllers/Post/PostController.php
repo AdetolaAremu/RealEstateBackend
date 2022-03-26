@@ -136,7 +136,7 @@ class PostController extends Controller
   // get all the city in the database only so we can use it to filter by city
   public function getTheCityInDB()
   {
-    $post = Post::select('id','city')->groupBy('city')->get();
+    $post = Post::select('id','city')->groupBy('posts.city')->get();
 
     return response($post, Response::HTTP_OK);
   }
