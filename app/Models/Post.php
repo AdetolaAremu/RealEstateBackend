@@ -13,7 +13,7 @@ class Post extends Model
 
     protected $guarded = ['id'];
 
-    public $primaryKey = "slug";
+    // public $primaryKey = "slug";
 
     public function getSlugOptions() : SlugOptions
     {
