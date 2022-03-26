@@ -33,7 +33,7 @@ class PostController extends Controller
       $post->price = $request->price;
       $post->type = $request->type;
       $post->city = $request->city;
-      $post->slug = Str::slug($request->title);
+      // $post->slug = Str::slug($request->title);
       $post->save();
 
       $documentURL = $request->file('images')->storePublicly('post_images', 's3');

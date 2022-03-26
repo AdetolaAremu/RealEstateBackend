@@ -10,21 +10,21 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 class Post extends Model
 {
-    use HasFactory, HasSlug, Uuids;
+    use HasFactory, Uuids;
 
     protected $guarded = ['id'];
 
-    public function getSlugOptions() : SlugOptions
-    {
-        return SlugOptions::create()
-            ->generateSlugsFrom('title')
-            ->saveSlugsTo('slug');
-    }
+    // public function getSlugOptions() : SlugOptions
+    // {
+    //     return SlugOptions::create()
+    //         ->generateSlugsFrom('title')
+    //         ->saveSlugsTo('slug');
+    // }
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+    // public function getRouteKeyName()
+    // {
+    //     return 'slug';
+    // }
 
     public function type()
     {
