@@ -40,7 +40,7 @@ class PostController extends Controller
       $documentURL = $request->file('images')->storePublicly('post_images', 's3');
 
       PostImages::create([
-        "post_id" => $post->id,
+        "post_id" => $post->slug,
         "images" => basename($documentURL),
         "url" => Storage::disk('s3')->url($documentURL)
       ]);
