@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Uuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -9,20 +10,9 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 class Post extends Model
 {
-    use HasFactory, HasSlug;
+    use HasFactory, HasSlug, Uuids;
 
-    protected $fillable = [
-        'id',
-        'slug',
-        'user_id',
-        'title',
-        'text',
-        'address',
-        'type',
-        'city'
-    ];
-
-    public $primaryKey = "slug";
+    protected $guarded = ['id'];
 
     public function getSlugOptions() : SlugOptions
     {
@@ -58,12 +48,12 @@ class Post extends Model
 
     public function likes()
     {
-        return $this->hasMany(Likes::class, 'slug');
+        return $this->hasMany(Likes::class);
     }
 
     public function comment()
     {
-        return $this->hasMany(Comment::class, 'slug');
+        return $this->hasMany(Comment::class);
     }
 
     public function avgRating()

@@ -26,7 +26,6 @@ class PostController extends Controller
     DB::beginTransaction();
     try {
       $post = new Post();
-      $post->id = $post->slug;
       $post->user_id = auth()->user()->id;
       $post->title = $request->title;
       $post->text = $request->text;
@@ -34,14 +33,13 @@ class PostController extends Controller
       $post->price = $request->price;
       $post->type = $request->type;
       $post->city = $request->city;
-      // $post->featured = $request->featured
       $post->slug = Str::slug($request->title);
       $post->save();
 
       $documentURL = $request->file('images')->storePublicly('post_images', 's3');
 
       PostImages::create([
-        "post_id" => $post->slug,
+        "post_id" => $post->id,
         "images" => basename($documentURL),
         "url" => Storage::disk('s3')->url($documentURL)
       ]);
@@ -105,7 +103,7 @@ class PostController extends Controller
   // get a real estate post
   public function show($id)
   {
-    $id = Post::where('slug', $id)->first();
+    $id = Post::where('id', $id)->first();
 
     $post = Post::with('images','comment','type','user:id,first_name,last_name,email,phone_number,username')
       ->withCount('likes')->get()->find($id);
@@ -158,7 +156,7 @@ class PostController extends Controller
   // get all the posts that has been liked by the logged in user
   public function mylikedPosts()
   {
-    $like = Post::join('likes','likes.slug', '=', 'posts.slug')
+    $like = Post::join('likes','likes.post_id', '=', 'posts.id')
       ->where('likes.user_id', auth()->user()->id)
       ->with('images')
       ->withCount('likes','comment')

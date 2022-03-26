@@ -20,11 +20,11 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['text' => 'required', 'slug' => 'required']);
+        $request->validate(['text' => 'required|min:20|max:100', 'post_id' => 'required']);
 
         Comment::create([
             "text" => $request->text,
-            "slug" => $request->slug,
+            "post_id" => $request->post_id,
             "user_id" => Auth::user()->id
         ]);
 

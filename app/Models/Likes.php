@@ -13,6 +13,6 @@ class Likes extends Model
 
     public function post()
     {
-        return $this->belongsTo(Post::class, 'slug');
+        return $this->belongsTo(Post::class);
     }
 }

@@ -15,7 +15,7 @@ class CreatePostRatingsTable extends Migration
     {
         Schema::create('post_ratings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('post_id')->references('id')->on('posts');
+            $table->foreignUuid('post_id');
             $table->integer('rating');
             $table->foreignId('user_id')->references('id')->on('users');
             $table->timestamps();

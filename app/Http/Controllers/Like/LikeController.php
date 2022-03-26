@@ -10,7 +10,7 @@ class LikeController extends Controller
 {
     public function store($id)
     {
-        $id = Post::where('slug', $id)->first();
+        $id = Post::where('id', $id)->first();
 
         $post = Post::find($id);
 
@@ -18,7 +18,7 @@ class LikeController extends Controller
             return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
         }
         
-        if(Likes::where('user_id', auth()->user()->id)->where('slug', $id)->exists()){
+        if(Likes::where('user_id', auth()->user()->id)->where('id', $id)->exists()){
             return response(['message' => 'You have already liked this post'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -33,7 +33,7 @@ class LikeController extends Controller
 
     public function likesCountPerPost($id)
     {
-        $like = Likes::where('slug', $id)->count();
+        $like = Likes::where('post_id', $id)->count();
 
         return response($like, Response::HTTP_OK);
     }

@@ -15,7 +15,7 @@ class CreatePostImagesTable extends Migration
     {
         Schema::create('post_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('post_id')->references('id')->on('posts');
+            $table->foreignUuid('post_id');
             $table->string('images');
             $table->string('url')->nullable();
             $table->timestamps();
