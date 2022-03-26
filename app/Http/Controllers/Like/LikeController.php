@@ -18,7 +18,7 @@ class LikeController extends Controller
             return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
         }
         
-        if(Likes::where('user_id', auth()->user()->id)->where('id', $id)->exists()){
+        if(Likes::where('user_id', auth()->user()->id)->where('post_id', $id)->exists()){
             return response(['message' => 'You have already liked this post'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -40,7 +40,7 @@ class LikeController extends Controller
 
     public function destroy($id)
     {
-        $like = Likes::where('user_id', auth()->id())->where('slug', $id)->first();
+        $like = Likes::where('user_id', auth()->id())->where('post_id', $id)->first();
 
         if (!$like) {
             return response(['message' => 'You have not liked this post!'], Response::HTTP_NOT_FOUND);
