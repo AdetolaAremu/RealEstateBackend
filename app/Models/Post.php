@@ -11,7 +11,16 @@ class Post extends Model
 {
     use HasFactory, HasSlug;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'id',
+        'slug',
+        'user_id',
+        'title',
+        'text',
+        'address',
+        'type',
+        'city'
+    ];
 
     public $primaryKey = "slug";
 

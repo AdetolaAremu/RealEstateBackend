@@ -26,6 +26,7 @@ class PostController extends Controller
     DB::beginTransaction();
     try {
       $post = new Post();
+      $post->id = $post->slug;
       $post->user_id = auth()->user()->id;
       $post->title = $request->title;
       $post->text = $request->text;
@@ -36,6 +37,7 @@ class PostController extends Controller
       // $post->featured = $request->featured
       $post->slug = Str::slug($request->title);
       $post->save();
+      dd($post->slug);
 
       $documentURL = $request->file('images')->storePublicly('post_images', 's3');
 
