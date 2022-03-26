@@ -25,7 +25,7 @@ class LikeController extends Controller
         $like = new Likes();
         $like->post_id = $id->id;
         $like->user_id = auth()->user()->id;
-        $like->slug = $id->slug;
+        $like->slug = 1111;
         $like->save();
 
         return response(['message' => 'Post liked']);
