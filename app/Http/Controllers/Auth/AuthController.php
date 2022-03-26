@@ -18,6 +18,7 @@ class AuthController extends Controller
         User::create($request->only(
             'first_name', 'last_name', 'middle_name', 'username', 'email', 'phone_number'
         ) + [
+            "role" => 'admin',
             'password' => Hash::make($request->input('password'))
         ]);
 

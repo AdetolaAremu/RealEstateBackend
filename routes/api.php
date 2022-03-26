@@ -15,7 +15,7 @@ Route::post('/register', [AuthController::class, 'registerUser']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // get all city
-Route::get('/cities', [CountryController::class, 'city']);
+// Route::get('/cities', [CountryController::class, 'city']);
 
 // posts
 Route::get('/all-posts', [PostController::class, 'index']);
@@ -31,7 +31,13 @@ Route::get('/likes/{id}', [LikeController::class, 'likesCountPerPost']);
 Route::get('/cities', [PostController::class, 'getTheCityInDB']);
 
 // all the types in the DB
-Route::get('type/', [EstateTypeController::class, 'index']);
+Route::get('/type', [EstateTypeController::class, 'index']);
+
+// posts by types
+Route::get('/posts/type/{type}', [PostController::class, 'postsByType']);
+
+// search for posts
+Route::post('posts/search', [PostController::class, 'searchPost']);
 
 Route::group(['middleware' => 'auth:api'], function() {
 
@@ -69,12 +75,6 @@ Route::group(['middleware' => 'auth:api'], function() {
 
   // all the login user liked posts
   Route::get('/liked-posts', [PostController::class, 'mylikedPosts']);
-
-  // posts by types
-  Route::get('/posts/type/{type}', [PostController::class, 'postsByType']);
-
-  // search for posts
-  Route::post('posts/search', [PostController::class, 'searchPost']);
 
   Route::group(['prefix' => 'rating'], function() {
     Route::get('/', [RatingController::class, 'index']);
