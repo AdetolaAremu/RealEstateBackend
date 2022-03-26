@@ -14,8 +14,6 @@ class LikeController extends Controller
 
         $post = Post::find($id);
 
-        // dd($post->id);
-
         if (!$post) {
             return response(['message' => 'Post not found'], Response::HTTP_NOT_FOUND);
         }
