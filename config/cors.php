@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['POST', 'GET', 'DELETE', 'PUT', '*'],
 
-    'allowed_origins' => ['*', 'https://deal-estate.netlify.app/register'],
+    'allowed_origins' => ['*', 'https://deal-estate.netlify.app'],
 
     'allowed_origins_patterns' => [],
 
