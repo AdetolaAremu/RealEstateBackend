@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', '*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'api/register', '*'],
 
     'allowed_methods' => ['POST', 'GET', 'DELETE', 'PUT', '*'],
 
-    'allowed_origins' => ['*', 'https://deal-estate.netlify.app'],
+    'allowed_origins' => ['*', 'https://deal-estate.netlify.app/register'],
 
     'allowed_origins_patterns' => [],
 
