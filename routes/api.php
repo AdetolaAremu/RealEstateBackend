@@ -39,7 +39,7 @@ Route::get('/posts/type/{type}', [PostController::class, 'postsByType']);
 // search for posts
 Route::post('posts/search', [PostController::class, 'searchPost']);
 
-Route::group(['middleware' => ['auth:api', 'cors']], function() {
+Route::group(['middleware' => 'auth:api'], function() {
 
   Route::post('/logout', [AuthController::class, 'logout']);
   

@@ -15,14 +15,12 @@ class AuthController extends Controller
 {
     public function registerUser(RegistrationRequest $request)
     {
-        $user = User::create($request->only(
+        User::create($request->only(
             'first_name', 'last_name', 'middle_name', 'username', 'email', 'phone_number'
         ) + [
             "role" => 'user',
             'password' => Hash::make($request->input('password'))
         ]);
-
-        dd($user);
 
         return response(['message' => 'Registration successful'], Response::HTTP_CREATED);
     }
