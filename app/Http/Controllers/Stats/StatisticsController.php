@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class StatisticsController extends Controller
 {
+    // get statistics for loggged in user
     public function userStats()
     {
         $count = array("userPosts" => 0, "likedPosts" => 0, "userComments" => 0);
@@ -23,11 +24,12 @@ class StatisticsController extends Controller
         return response($count, Response::HTTP_OK);
     }
 
+    // get statistics for admin
     public function adminStats()
     {
-        // if (Auth::user()->role !== 'admin') {
-        //     return response(['message' => 'Only admins can see this'], Response::HTTP_UNAUTHORIZED);
-        // }
+        if (Auth::user()->role !== 'admin') {
+            return response(['message' => 'Only admins can see this'], Response::HTTP_UNAUTHORIZED);
+        }
 
         $count = array("userCount" => 0, "allPosts" => 0, "allLikes", "allComments");
         $count['userCount'] = User::count();

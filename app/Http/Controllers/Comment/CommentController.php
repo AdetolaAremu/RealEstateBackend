@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    // get all comments
     public function index()
     {
         $comment = Comment::get();
@@ -18,9 +19,10 @@ class CommentController extends Controller
         return response($comment, Response::HTTP_OK);
     }
 
+    // store a new comment
     public function store(Request $request)
     {
-        $request->validate(['text' => 'required|min:20|max:100', 'post_id' => 'required']);
+        $request->validate(['text' => 'required|min:10|max:100', 'post_id' => 'required']);
 
         Comment::create([
             "text" => $request->text,
@@ -31,6 +33,7 @@ class CommentController extends Controller
         return response(['message' => 'Comment created successfully'], Response::HTTP_CREATED);
     }
 
+    // update a comment
     public function update(Request $request, $id)
     {
         $comment = Comment::find($id);
@@ -44,6 +47,7 @@ class CommentController extends Controller
         return response(['message' => 'Comment updated successfully'], Response::HTTP_CREATED);
     }
 
+    // show a comment
     public function show($id)
     {
         $comment = Comment::find($id);
@@ -55,6 +59,7 @@ class CommentController extends Controller
         return response($comment, Response::HTTP_OK);
     }
 
+    // delete a comment
     public function destroy($id)
     {
         $comment = Comment::find($id);

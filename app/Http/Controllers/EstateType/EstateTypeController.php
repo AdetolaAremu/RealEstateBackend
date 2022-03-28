@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 
 class EstateTypeController extends Controller
 {
+    // get all estate types
     public function index()
     {
         $type = EstateType::get();
@@ -16,6 +17,7 @@ class EstateTypeController extends Controller
         return response($type, Response::HTTP_OK);
     }
 
+    // store a new estate type
     public function store(Request $request)
     {
         $request->validate(['name' => 'required']);
@@ -25,6 +27,7 @@ class EstateTypeController extends Controller
         return response(['message' => 'Estate type created successfully!'], Response::HTTP_CREATED);
     }
 
+    // update a estate type
     public function update(Request $request, $id)
     {
         $type = EstateType::find($id);
@@ -38,6 +41,7 @@ class EstateTypeController extends Controller
         return response(['message' => 'Estate type updated successfully!'], Response::HTTP_OK);
     }
 
+    // show a estate type
     public function show($id)
     {
         $type = EstateType::with('posts.comment','posts.images')->get()->find($id);
@@ -55,6 +59,7 @@ class EstateTypeController extends Controller
         return response($type, Response::HTTP_OK);
     }
 
+    // delete a estate type
     public function destroy($id)
     {
         $type = EstateType::find($id);

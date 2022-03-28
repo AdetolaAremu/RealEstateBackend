@@ -8,6 +8,7 @@ use App\Models\Post;
 use Illuminate\Http\Response;
 class LikeController extends Controller
 {
+    // store a new like
     public function store($id)
     {
         $getPostID = Post::where('id', $id)->first();
@@ -30,6 +31,7 @@ class LikeController extends Controller
         return response(['message' => 'Post liked']);
     }
 
+    // get likes count for a post
     public function likesCountPerPost($id)
     {
         $like = Likes::where('post_id', $id)->count();
@@ -37,6 +39,7 @@ class LikeController extends Controller
         return response($like, Response::HTTP_OK);
     }
 
+    // delete a like
     public function destroy($id)
     {
         $like = Likes::where('user_id', auth()->id())->where('post_id', $id)->first();
@@ -50,6 +53,7 @@ class LikeController extends Controller
         return response(['message' => 'You have unliked this post!']);
     }
 
+    // check if a post has been liked
     public function checkLiked($id)
     {
         $check = Likes::where('user_id', auth()->user()->id)->where('post_id', $id)->exists();
