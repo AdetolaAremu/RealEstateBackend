@@ -34,7 +34,6 @@ class PostController extends Controller
       $post->address = $request->address;
       $post->price = $request->price;
       $post->type = $request->type;
-      $post->featured = 1;
       $post->city = $request->city;
       $post->save();
 
