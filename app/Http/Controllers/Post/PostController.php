@@ -146,11 +146,15 @@ class PostController extends Controller
   // filter by the city we have in the database
   public function filterByCity($city)
   {
+    // get all posts if response/result is empty
+    $posts = Post::with('likes','images','comment')->withCount('likes')->latest()->get();
+
     $post = Post::where('city', $city)->with('likes','images','comment')
       ->latest()->withCount('likes')->get();
 
-    if (!$post) {
-      return response(['message' => 'There are no search results for this city']);
+    // if response/result is empty get all posts
+    if (!$post || $post->isEmpty()) {
+      return response($posts, Response::HTTP_OK);
     }
 
     return response($post, Response::HTTP_OK);
@@ -171,14 +175,16 @@ class PostController extends Controller
   // get post by types
   public function postsByType($type)
   {
+    $posts = Post::with('images','type')->withCount('likes','comment')->get();
+
     $post = Post::join('estate_types','estate_types.id', '=', 'posts.type')
       ->where('estate_types.name', $type)
       ->with('images','type')
       ->withCount('likes','comment')
       ->get();
     
-    if (!$post) {
-      return response(['message' => 'There are no search results for this category'], Response::HTTP_NOT_FOUND);
+    if (!$post || $post->isEmpty()) {
+      return response($posts, Response::HTTP_OK);
     }
 
     return response($post, Response::HTTP_OK);

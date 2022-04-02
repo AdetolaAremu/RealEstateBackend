@@ -39,6 +39,9 @@ Route::get('/posts/type/{type}', [PostController::class, 'postsByType']);
 // search for posts
 Route::post('posts/search', [PostController::class, 'searchPost']);
 
+// filter posts by city
+Route::get('filter/{city}', [PostController::class, 'filterByCity']);
+
 Route::group(['middleware' => 'auth:api'], function() {
 
   Route::post('/logout', [AuthController::class, 'logout']);
@@ -88,10 +91,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/{id}', [CommentController::class, 'show']);
     Route::put('/{id}', [CommentController::class, 'update']);
     Route::delete('/{id}', [CommentController::class, 'destroy']);
-  });
-
-  Route::group(['prefix' => 'filter'], function() {
-    Route::get('/{city}', [PostController::class, 'filterByCity']);
   });
 
   Route::get('/ratings', [PostController::class, 'filterbyRating']);
